@@ -15,5 +15,35 @@
 	"observability": {
 		"enabled": true
 	},
-	"upload_source_maps": true
+	"upload_source_maps": true,
+	
+	// D1 Database Configuration
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "perez-automotora",
+			"database_id": "9c2cb7f7-4eeb-4824-81ec-991af035d6c2"
+		}
+	],
+	
+	// R2 Bucket Configuration
+	"r2_buckets": [
+		{
+			"binding": "BUCKET",
+			"bucket_name": "perez-automotora",
+			"preview_bucket_name": "perez-automotora"
+		}
+	],
+
+	// Environment Variables
+	"env": {
+		"production": {
+			"vars": {}
+		},
+		"preview": {
+			"vars": {}
+		}
+	}
 }
+
+
