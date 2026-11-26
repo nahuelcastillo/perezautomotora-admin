@@ -38,10 +38,16 @@
 	// Environment Variables
 	"env": {
 		"production": {
-			"vars": {}
+			"vars": {
+				"NEXT_PUBLIC_R2_ACCOUNT_ID": "965a96d448588b955fd63d8b7c6efc87",
+				"NEXT_PUBLIC_R2_BUCKET_NAME": "perez-automotora"
+			}
 		},
 		"preview": {
-			"vars": {}
+			"vars": {
+				"NEXT_PUBLIC_R2_ACCOUNT_ID": "965a96d448588b955fd63d8b7c6efc87",
+				"NEXT_PUBLIC_R2_BUCKET_NAME": "perez-automotora"
+			}
 		}
 	}
 }
