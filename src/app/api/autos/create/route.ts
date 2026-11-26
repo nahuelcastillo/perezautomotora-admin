@@ -31,9 +31,10 @@ export async function POST(request: NextRequest) {
 		const carDataJson = formData.get('carData') as string;
 		
 		console.log('carDataJson received:', !!carDataJson);
+		console.log('carDataJson value:', carDataJson);
 		
 		const carData = JSON.parse(carDataJson);
-		console.log('carData parsed:', carData);
+		console.log('carData parsed:', JSON.stringify(carData));
 
 		// Generar ID único para el auto
 		const autoId = uuidv4();
@@ -49,25 +50,44 @@ export async function POST(request: NextRequest) {
 		}
 
 		// Insertar en D1
-		console.log('Attempting D1 insert...');
+		console.log('Preparing D1 insert with values:', {
+			id: autoId,
+			marca: carData.marca,
+			modelo: carData.modelo,
+			año: carData.año,
+			precio: carData.precio,
+			descripcion: carData.descripcion || '',
+			kilometraje: carData.kilometraje || 0,
+			createdAt: new Date().toISOString()
+		});
+
 		try {
-			const insertResult = await db.prepare(`
+			const sql = `
 				INSERT INTO autos (id, marca, modelo, año, precio, descripcion, kilometraje, createdAt)
 				VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-			`).bind(
+			`;
+			console.log('SQL:', sql);
+			
+			const stmt = db.prepare(sql);
+			console.log('Statement prepared');
+			
+			const boundStmt = stmt.bind(
 				autoId,
 				carData.marca,
 				carData.modelo,
-				carData.año,
-				carData.precio,
+				Number(carData.año),
+				Number(carData.precio),
 				carData.descripcion || '',
-				carData.kilometraje || 0,
+				Number(carData.kilometraje) || 0,
 				new Date().toISOString()
-			).run();
+			);
+			console.log('Statement bound');
 			
-			console.log('D1 insert result:', insertResult);
+			const insertResult = await boundStmt.run();
+			console.log('D1 insert result:', JSON.stringify(insertResult));
 		} catch (dbError) {
-			console.error('D1 error:', dbError);
+			console.error('D1 error details:', dbError);
+			console.error('D1 error message:', dbError instanceof Error ? dbError.message : String(dbError));
 			throw new Error(`D1 Error: ${dbError instanceof Error ? dbError.message : String(dbError)}`);
 		}
 
@@ -80,7 +100,7 @@ export async function POST(request: NextRequest) {
 				const file = formData.get(`foto${index}`) as File;
 				if (!file) break;
 
-				console.log(`Uploading photo ${index}...`);
+				console.log(`Uploading photo ${index}: ${file.name}`);
 				const buffer = await file.arrayBuffer();
 				const filename = `${autoId}/${index}-${file.name}`;
 
@@ -99,12 +119,18 @@ export async function POST(request: NextRequest) {
 		// Actualizar referencias de fotos en D1
 		if (fotoReferencias.length > 0) {
 			console.log('Updating photo references in D1...');
-			await db.prepare(`
-				UPDATE autos SET fotos = ? WHERE id = ?
-			`).bind(
-				JSON.stringify(fotoReferencias),
-				autoId
-			).run();
+			try {
+				await db.prepare(`
+					UPDATE autos SET fotos = ? WHERE id = ?
+				`).bind(
+					JSON.stringify(fotoReferencias),
+					autoId
+				).run();
+				console.log('Photo references updated');
+			} catch (updateError) {
+				console.error('Error updating photos:', updateError);
+				throw updateError;
+			}
 		}
 
 		console.log('SUCCESS: Auto created with ID:', autoId);
@@ -118,11 +144,14 @@ export async function POST(request: NextRequest) {
 		);
 	} catch (error) {
 		console.error('ERROR:', error);
+		console.error('ERROR message:', error instanceof Error ? error.message : String(error));
 		return NextResponse.json(
 			{ 
-				message: error instanceof Error ? error.message : String(error)
+				message: error instanceof Error ? error.message : String(error),
+				error: String(error)
 			},
 			{ status: 500 }
 		);
 	}
 }
+
