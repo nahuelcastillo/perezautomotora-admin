@@ -195,7 +195,7 @@ export default function StockPage() {
 																alt={`Foto ${idx + 1} de ${selectedAuto.marca} ${selectedAuto.modelo}`}
 																fill
 																className="object-cover"
-																sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+																unoptimized
 																onError={(e) => {
 																	const img = e.target as HTMLImageElement;
 																	img.style.display = 'none';
