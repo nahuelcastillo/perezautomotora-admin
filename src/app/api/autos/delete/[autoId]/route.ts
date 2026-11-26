@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getCloudflareBindings } from '@/lib/cloudflare-bindings';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export async function DELETE(
 	request: NextRequest,
@@ -8,8 +9,7 @@ export async function DELETE(
 ) {
 	try {
 		const { autoId } = await context.params;
-		const db = (globalThis as any).DB as D1Database;
-		const bucket = (globalThis as any).BUCKET as R2Bucket;
+		const { db, bucket } = await getCloudflareBindings();
 
 		if (!db) {
 			return NextResponse.json(

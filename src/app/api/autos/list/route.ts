@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getCloudflareBindings } from '@/lib/cloudflare-bindings';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export async function GET(request: NextRequest) {
 	try {
-		const db = (globalThis as any).DB as D1Database;
+		const { db } = await getCloudflareBindings();
 
 		if (!db) {
 			return NextResponse.json(
