@@ -1,7 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
+import { generateR2PublicUrl } from '@/lib/r2-utils';
 
 interface Auto {
 	id: string;
@@ -186,11 +188,23 @@ export default function StockPage() {
 													{selectedAuto.fotos.map((foto, idx) => (
 														<div
 															key={idx}
-															className="bg-gray-100 rounded-lg overflow-hidden aspect-video flex items-center justify-center"
+															className="bg-gray-100 rounded-lg overflow-hidden aspect-video flex items-center justify-center relative"
 														>
-															<p className="text-gray-500 text-sm">
-																Foto {idx + 1}: {foto}
-															</p>
+															<Image
+																src={generateR2PublicUrl(foto)}
+																alt={`Foto ${idx + 1} de ${selectedAuto.marca} ${selectedAuto.modelo}`}
+																fill
+																className="object-cover"
+																sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+																onError={(e) => {
+																	const img = e.target as HTMLImageElement;
+																	img.style.display = 'none';
+																	const parent = img.parentElement;
+																	if (parent) {
+																		parent.innerHTML = '<p class="text-gray-500 text-xs text-center px-2">Error al cargar imagen</p>';
+																	}
+																}}
+															/>
 														</div>
 													))}
 												</div>
