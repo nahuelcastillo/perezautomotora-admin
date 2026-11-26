@@ -6,13 +6,13 @@ interface CloudflareEnv {
 	BUCKET: R2Bucket;
 }
 
-export const runtime = 'nodejs';
+export const runtime = 'edge';
 
 export async function POST(request: NextRequest) {
 	try {
 		const env = process.env as unknown as CloudflareEnv;
-		const db = env.DB;
-		const bucket = env.BUCKET;
+		const db = env.DB as D1Database;
+		const bucket = env.BUCKET as R2Bucket;
 
 		if (!db) {
 			return NextResponse.json(
