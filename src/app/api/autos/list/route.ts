@@ -1,15 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-interface CloudflareEnv {
-	DB: D1Database;
-}
-
 export const runtime = 'edge';
 
 export async function GET(request: NextRequest) {
 	try {
-		const env = process.env as unknown as CloudflareEnv;
-		const db = env.DB as D1Database;
+		const db = (globalThis as any).DB as D1Database;
 
 		if (!db) {
 			return NextResponse.json(

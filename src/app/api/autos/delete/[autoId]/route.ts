@@ -1,10 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-interface CloudflareEnv {
-	DB: D1Database;
-	BUCKET: R2Bucket;
-}
-
 export const runtime = 'edge';
 
 export async function DELETE(
@@ -13,9 +8,8 @@ export async function DELETE(
 ) {
 	try {
 		const { autoId } = await context.params;
-		const env = process.env as unknown as CloudflareEnv;
-		const db = env.DB as D1Database;
-		const bucket = env.BUCKET as R2Bucket;
+		const db = (globalThis as any).DB as D1Database;
+		const bucket = (globalThis as any).BUCKET as R2Bucket;
 
 		if (!db) {
 			return NextResponse.json(
@@ -24,7 +18,6 @@ export async function DELETE(
 			);
 		}
 
-		// Obtener las fotos antes de eliminar
 		const result = await db.prepare(`
 			SELECT fotos FROM autos WHERE id = ?
 		`).bind(autoId).first() as any;
@@ -36,7 +29,6 @@ export async function DELETE(
 			);
 		}
 
-		// Eliminar fotos de R2
 		if (bucket && result.fotos) {
 			const fotoReferencias = JSON.parse(result.fotos);
 			for (const foto of fotoReferencias) {
@@ -44,7 +36,6 @@ export async function DELETE(
 			}
 		}
 
-		// Eliminar de D1
 		await db.prepare(`
 			DELETE FROM autos WHERE id = ?
 		`).bind(autoId).run();
