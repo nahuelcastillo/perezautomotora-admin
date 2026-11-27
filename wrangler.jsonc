@@ -39,14 +39,12 @@
 	"env": {
 		"production": {
 			"vars": {
-				"NEXT_PUBLIC_R2_ACCOUNT_ID": "965a96d448588b955fd63d8b7c6efc87",
-				"NEXT_PUBLIC_R2_BUCKET_NAME": "perez-automotora"
+				"NEXT_PUBLIC_R2_PUBLIC_URL": "https://pub-cb7d4efdfc49403585445ecc78709bc9.r2.dev"
 			}
 		},
 		"preview": {
 			"vars": {
-				"NEXT_PUBLIC_R2_ACCOUNT_ID": "965a96d448588b955fd63d8b7c6efc87",
-				"NEXT_PUBLIC_R2_BUCKET_NAME": "perez-automotora"
+				"NEXT_PUBLIC_R2_PUBLIC_URL": "https://pub-cb7d4efdfc49403585445ecc78709bc9.r2.dev"
 			}
 		}
 	}
